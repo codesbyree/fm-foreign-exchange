@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
+
+@theme inline {
+    --font-mono: "JetBrains Mono Variable", monospace;
+    --color-background: #222;
+}
+
+@layer {
+    html {
+        @apply font-mono bg-background;
+    }
+}
