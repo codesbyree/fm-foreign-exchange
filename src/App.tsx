@@ -1,15 +1,23 @@
-import Header from "./components/shared/header";
-import LiveMarketCrawler from "./components/shared/live-markets-crawler";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router";
+
+import MainLayout from "./components/layouts/main-layout";
+import HistoryPage from "./app/history-page";
+import ComparePage from "./app/compare-page";
+import FavoritesPage from "./app/favorites-page";
+import LogPage from "./app/log-page";
 
 export default function App() {
   return (
-    <div className="bg-background text-lime-500">
-      <Header />
-      <LiveMarketCrawler />
-
-      <main>
-        <h1>Hello world</h1>
-      </main>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route index element={<Navigate to="history" />} />
+        <Route element={<MainLayout />}>
+          <Route path="history" element={<HistoryPage />} />
+          <Route path="compare" element={<ComparePage />} />
+          <Route path="favorites" element={<FavoritesPage />} />
+          <Route path="log" element={<LogPage />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
