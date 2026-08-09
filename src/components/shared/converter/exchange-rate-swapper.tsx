@@ -5,10 +5,23 @@ import { motion } from "motion/react";
 
 import { Button } from "../../ui/button";
 import { useSearchParams } from "react-router";
+import { useCurrencyStore } from "../../../stores/use-currency.store";
+import { useShallow } from "zustand/react/shallow";
 
 export default function ExchangeRateSwapper() {
   const [rotation, setRotation] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const { exchangeRate, setExchangeRate, sendAmountDisplay, receiveAmountDisplay, setSendAmountDisplay, setReceiveAmountDisplay } = useCurrencyStore(
+    useShallow((s) => ({
+      exchangeRate: s.exchangeRate,
+      setExchangeRate: s.setExchangeRate,
+      sendAmountDisplay: s.sendAmountDisplay,
+      receiveAmountDisplay: s.receiveAmountDisplay,
+      setSendAmountDisplay: s.setSendAmountDisplay,
+      setReceiveAmountDisplay: s.setReceiveAmountDisplay,
+    })),
+  );
 
   const handleClick = () => {
     const sendQuery = searchParams.get("send");
@@ -17,9 +30,15 @@ export default function ExchangeRateSwapper() {
     setSearchParams((searchParam) => {
       if (receiveQuery) searchParam.set("send", receiveQuery);
       if (sendQuery) searchParam.set("receive", sendQuery);
-
       return searchParam;
     });
+
+    if (exchangeRate > 0) {
+      setExchangeRate(1 / exchangeRate);
+    }
+
+    setSendAmountDisplay(receiveAmountDisplay);
+    setReceiveAmountDisplay(sendAmountDisplay);
 
     setRotation((prev) => prev + 180);
   };

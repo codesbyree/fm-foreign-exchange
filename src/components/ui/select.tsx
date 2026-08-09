@@ -47,6 +47,7 @@ export function SelectTrigger({ children, className, disabled, ...rest }: Button
 
   return (
     <Button
+      type="button"
       ref={triggerRef}
       role="combobox"
       aria-expanded={open}

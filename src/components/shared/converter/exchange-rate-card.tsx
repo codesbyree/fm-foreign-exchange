@@ -1,5 +1,9 @@
 import { useState, useEffect, useMemo, type ComponentPropsWithoutRef, type SyntheticEvent } from "react";
 import { useSearchParams } from "react-router";
+import { useShallow } from "zustand/react/shallow";
+import { AnimatePresence, motion } from "motion/react";
+import { HugeiconsIcon } from "@hugeicons/react";
+import { ChevronDownIcon } from "@hugeicons/core-free-icons";
 
 import { cn } from "../../../utils/style.utils";
 import { currencies, type Currency } from "../../../config/currency.config";
@@ -7,6 +11,7 @@ import { useCurrencyStore } from "../../../stores/use-currency.store";
 
 import Input from "../../ui/input";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSearchFilter, SelectTrigger } from "../../ui/select";
+import { formatCurrency, unformatToNumber } from "../../../utils/currency.utils";
 
 type Props = ComponentPropsWithoutRef<"div"> & {
   type: "send" | "receive";
@@ -15,7 +20,17 @@ type Props = ComponentPropsWithoutRef<"div"> & {
 export default function ExchangeRateCard(props: Props) {
   const { type, className } = props;
 
-  const { popularCurrencies, addPopularCurrency } = useCurrencyStore();
+  const { popularCurrencies, addPopularCurrency, exchangeRate, sendAmountDisplay, receiveAmountDisplay, setSendAmountDisplay, setReceiveAmountDisplay } = useCurrencyStore(
+    useShallow((s) => ({
+      popularCurrencies: s.popularCurrencies,
+      addPopularCurrency: s.addPopularCurrency,
+      exchangeRate: s.exchangeRate,
+      sendAmountDisplay: s.sendAmountDisplay,
+      receiveAmountDisplay: s.receiveAmountDisplay,
+      setSendAmountDisplay: s.setSendAmountDisplay,
+      setReceiveAmountDisplay: s.setReceiveAmountDisplay,
+    })),
+  );
 
   const [searchParams, setSearchParams] = useSearchParams();
   const [searchQuery, setSearchQuery] = useState("");
@@ -55,6 +70,9 @@ export default function ExchangeRateCard(props: Props) {
       return prevParams;
     });
 
+    setSendAmountDisplay("0");
+    setReceiveAmountDisplay("0");
+
     addPopularCurrency(currency);
     setSearchQuery("");
   };
@@ -63,6 +81,39 @@ export default function ExchangeRateCard(props: Props) {
     const query = searchQuery.toLowerCase();
     return currencies.filter((c) => c.code.toLowerCase().includes(query) || c.label.toLowerCase().includes(query));
   }, [searchQuery]);
+
+  const handleChange = (e: SyntheticEvent) => {
+    let { value } = e.currentTarget as HTMLInputElement;
+
+    if (value === "") {
+      setSendAmountDisplay("0");
+      setReceiveAmountDisplay("0");
+      return;
+    }
+
+    // Strip leading zeros if they are immediately followed by another number
+    // This fixes the "01" -> "1" issue while preserving "0.x" decimals
+    value = value.replace(/^0+(?=\d)/, "");
+
+    if (value.endsWith(".")) {
+      if (type === "send") setSendAmountDisplay(value);
+      else setReceiveAmountDisplay(value);
+      return;
+    }
+
+    const normalized = value.startsWith(".") ? `0${value}` : value;
+    const raw = unformatToNumber(normalized);
+
+    if (isNaN(raw)) return;
+
+    if (type === "send") {
+      setSendAmountDisplay(value);
+      setReceiveAmountDisplay(formatCurrency(raw * exchangeRate));
+    } else {
+      setReceiveAmountDisplay(value);
+      setSendAmountDisplay(formatCurrency(raw / (exchangeRate || 1)));
+    }
+  };
 
   return (
     <div className={cn("p-4 md:p-5 rounded-2xl bg-neutral-600 border border-neutral-500 space-y-5 w-full", className)}>
@@ -73,13 +124,32 @@ export default function ExchangeRateCard(props: Props) {
           <label className="sr-only" htmlFor={type + "-value"}>
             Value
           </label>
-          <Input id={type + "-value"} defaultValue={"0"} type="text" inputMode="numeric" className={cn("text-3xl xl:text-4xl font-bold", type === "receive" && "text-lime-500")} />
+
+          <Input
+            onChange={handleChange}
+            id={type + "-value"}
+            type="text"
+            inputMode="decimal"
+            value={type === "send" ? sendAmountDisplay : receiveAmountDisplay}
+            className={cn("text-3xl xl:text-4xl font-bold p-1", type === "receive" && "text-lime-500")}
+          />
         </div>
 
         <Select>
           <SelectTrigger size="large">
-            <img src={selectedCurrency.image} className="w-5 h-5 rounded-full shrink-0" alt="" />
-            <span className="text-sm text-neutral-50 tracking-widest">{selectedCurrency.code}</span>
+            <AnimatePresence mode="popLayout">
+              <motion.span
+                key={exchangeRate.toString()}
+                className="flex items-center gap-2"
+                initial={{ y: type === "send" ? -10 : 10, opacity: 0, filter: "blur(8px)" }}
+                animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+                exit={{ y: type === "send" ? 10 : -10, opacity: 0, filter: "blur(8px)" }}
+              >
+                <img src={selectedCurrency.image} className="w-5 h-5 rounded-full shrink-0" alt="" />
+                <span className="text-sm text-neutral-50 tracking-widest">{selectedCurrency.code}</span>
+                <HugeiconsIcon icon={ChevronDownIcon} size={16} />
+              </motion.span>
+            </AnimatePresence>
           </SelectTrigger>
 
           <SelectContent className="w-78 md:w-94">

@@ -4,6 +4,7 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { Button } from "../../ui/button";
 import ExchangeRateCard from "./exchange-rate-card";
 import ExchangeRateSwapper from "./exchange-rate-swapper";
+import ExchangeRate from "./exchange-rate";
 
 export default function Converter() {
   return (
@@ -15,7 +16,7 @@ export default function Converter() {
       </div>
 
       <div className="p-4 md:p-5 flex flex-col md:flex-row items-center gap-4 md:justify-between">
-        <p className="text-center text-neutral-50 text-2xs">1 USD = 0.8530 EUR</p>
+        <ExchangeRate />
 
         <div className="flex gap-2">
           <Button intent="primary">
