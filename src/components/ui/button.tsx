@@ -1,48 +1,72 @@
-import { cn } from "tailwind-variants";
+import type { ComponentPropsWithRef } from "react";
+import { cn } from "../../utils/style.utils";
 import { cva, type VariantProps } from "class-variance-authority";
 
-const button = cva("button", {
-  variants: {
-    intent: {
-      primary: ["bg-blue-500", "text-white", "border-transparent"],
-      secondary: ["bg-white", "text-gray-800", "border-gray-400"],
-    },
-    size: {
-      small: ["text-sm", "py-1", "px-2"],
-      medium: ["text-base", "py-2", "px-4"],
-    },
-    disabled: {
-      false: null,
-      true: ["opacity-50", "cursor-not-allowed"],
-    },
-  },
-  compoundVariants: [
-    {
-      intent: "primary",
-      disabled: false,
-      class: "hover:bg-blue-600",
-    },
-    {
-      intent: "secondary",
-      disabled: false,
-      class: "hover:bg-gray-100",
-    },
-    { intent: "primary", size: "medium", class: "uppercase" },
+const button = cva(
+  [
+    "inline-flex",
+    "items-center",
+    "justify-center",
+    "gap-2",
+    "rounded-md",
+    "text-xs",
+    "font-medium",
+    "uppercase",
+    "tracking-[0.15em]",
+    "transition-all",
+    "duration-200",
+    "focus-visible:outline-none",
+    "focus-visible:ring-2",
+    "focus-visible:ring-lime-400",
+    "focus-visible:ring-offset-2",
+    "focus-visible:ring-offset-neutral-950",
+    "disabled:pointer-events-none",
+    "cursor-pointer",
   ],
-  defaultVariants: {
-    disabled: false,
-    intent: "primary",
-    size: "medium",
+  {
+    variants: {
+      intent: {
+        primary: ["bg-lime-500", "text-black", "hover:bg-lime-500/80"],
+        outline: ["border", "border-lime-400", "text-neutral-50", "bg-transparent", "hover:bg-lime-400/20"],
+        secondary: ["bg-neutral-600", "text-neutral-50", "hover:bg-neutral-500", "hover:text-white", "border", "border-neutral-400"],
+      },
+      size: {
+        large: ["p-2.5", "h-10"],
+        default: ["px-3", "h-8"],
+        small: ["px-3", "h-7.5", "text-xs"],
+        icon: ["w-8", "h-8", "p-0"],
+        "icon-xl": ["w-12", "h-12"],
+      },
+      disabled: {
+        true: "",
+        false: "",
+      },
+    },
+    compoundVariants: [
+      {
+        intent: "outline",
+        disabled: true,
+        class: "border-neutral-700 text-neutral-500 bg-transparent",
+      },
+      {
+        intent: ["primary", "secondary"],
+        disabled: true,
+        class: "opacity-50",
+      },
+    ],
+    defaultVariants: {
+      intent: "primary",
+      size: "default",
+      disabled: false,
+    },
   },
-});
+);
 
-export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "disabled">, VariantProps<typeof button> {}
+export interface ButtonProps extends Omit<ComponentPropsWithRef<"button">, "disabled">, VariantProps<typeof button> {}
 
-export function Button(props: ButtonProps) {
-  const { className, children, disabled, onClick, ...rest } = props;
-
+export function Button({ className, intent, size, disabled, children, ...props }: ButtonProps) {
   return (
-    <button className={cn(button({}), className)} onClick={onClick} disabled={disabled || undefined} {...rest}>
+    <button className={cn(button({ intent, size, disabled }), className)} disabled={disabled || undefined} {...props}>
       {children}
     </button>
   );
