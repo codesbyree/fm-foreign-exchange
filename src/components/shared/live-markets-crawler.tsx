@@ -20,7 +20,7 @@ export default function LiveMarketCrawler() {
 
   return (
     <motion.div
-      transition={{ duration: 0.8, damping: 100, bounce: 4 }}
+      transition={{ type: "spring", stiffness: 320, damping: 32 }}
       initial={{ y: -5, opacity: 0, filter: "blur(8px)" }}
       animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
       role="section"

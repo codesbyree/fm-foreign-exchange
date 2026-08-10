@@ -2,9 +2,10 @@ import { StarIcon } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 
 import { Button } from "../../ui/button";
+import ExchangeRate from "./exchange-rate";
 import ExchangeRateCard from "./exchange-rate-card";
 import ExchangeRateSwapper from "./exchange-rate-swapper";
-import ExchangeRate from "./exchange-rate";
+import AddConversionLogButton from "../add-conversion-log-button";
 
 export default function Converter() {
   return (
@@ -23,7 +24,8 @@ export default function Converter() {
             <HugeiconsIcon icon={StarIcon} className="w-3" fill="currentColor" />
             FAVORITED
           </Button>
-          <Button intent="outline">LOG CONVERSION</Button>
+
+          <AddConversionLogButton />
         </div>
       </div>
     </section>

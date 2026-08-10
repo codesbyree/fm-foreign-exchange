@@ -45,7 +45,7 @@ export default function ExchangeRateSwapper() {
 
   return (
     <Button size="icon-xl" intent="secondary" onClick={handleClick} className="shrink-0">
-      <motion.span animate={{ rotate: rotation }} transition={{ duration: 0.3, ease: "easeInOut" }} className="inline-flex rotate-90 md:rotate-0">
+      <motion.span animate={{ rotate: rotation }} transition={{ type: "spring", stiffness: 320, damping: 32 }} className="inline-flex rotate-90 md:rotate-0">
         <HugeiconsIcon icon={ArrowLeftRightIcon} size={20} />
       </motion.span>
     </Button>
