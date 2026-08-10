@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo, type ComponentPropsWithoutRef, type SyntheticEvent } from "react";
 import { useSearchParams } from "react-router";
 import { useShallow } from "zustand/react/shallow";
-import { AnimatePresence, motion } from "motion/react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { ChevronDownIcon } from "@hugeicons/core-free-icons";
 
@@ -132,24 +131,16 @@ export default function ExchangeRateCard(props: Props) {
             inputMode="decimal"
             value={type === "send" ? sendAmountDisplay : receiveAmountDisplay}
             className={cn("text-3xl xl:text-4xl font-bold p-1", type === "receive" && "text-lime-500")}
+            autoComplete="off"
+            autoCorrect="off"
           />
         </div>
 
         <Select>
           <SelectTrigger size="large">
-            <AnimatePresence mode="popLayout">
-              <motion.span
-                key={exchangeRate.toString()}
-                className="flex items-center gap-2"
-                initial={{ y: type === "send" ? -10 : 10, opacity: 0, filter: "blur(8px)" }}
-                animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
-                exit={{ y: type === "send" ? 10 : -10, opacity: 0, filter: "blur(8px)" }}
-              >
-                <img src={selectedCurrency.image} className="w-5 h-5 rounded-full shrink-0" alt="" />
-                <span className="text-sm text-neutral-50 tracking-widest">{selectedCurrency.code}</span>
-                <HugeiconsIcon icon={ChevronDownIcon} size={16} />
-              </motion.span>
-            </AnimatePresence>
+            <img src={selectedCurrency.image} className="w-5 h-5 rounded-full shrink-0" alt="" />
+            <span className="text-sm text-neutral-50 tracking-widest">{selectedCurrency.code}</span>
+            <HugeiconsIcon icon={ChevronDownIcon} size={16} />
           </SelectTrigger>
 
           <SelectContent className="w-78 md:w-94">

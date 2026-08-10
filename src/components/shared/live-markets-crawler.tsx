@@ -1,46 +1,67 @@
+import { HugeiconsIcon } from "@hugeicons/react";
+import { EqualSignIcon, TriangleIcon } from "@hugeicons/core-free-icons";
+import { motion } from "motion/react";
+
 import { cn } from "../../utils/style.utils";
+import { getCrawlerData, type CrawlerData } from "../../helpers/api.helper";
 
 import { Marquee } from "../ui/marquee";
-import { HugeiconsIcon } from "@hugeicons/react";
-import { TriangleIcon } from "@hugeicons/core-free-icons";
+import { useQuery } from "@tanstack/react-query";
 
 export default function LiveMarketCrawler() {
+  const { data, isLoading, isFetching } = useQuery({ queryKey: ["crawlerData"], queryFn: getCrawlerData, staleTime: 5 * 60 * 1000 });
+
+  if (isLoading || isFetching) return <div className="h-8.5 md:h-10"></div>;
+  if (!data) return null;
+
+  const myStyle = {
+    ["--duration" as string]: `${data.length * 2}s`,
+  };
+
   return (
-    <div role="section" className="flex">
+    <motion.div
+      transition={{ duration: 0.8, damping: 100, bounce: 4 }}
+      initial={{ y: -5, opacity: 0, filter: "blur(8px)" }}
+      animate={{ y: 0, opacity: 1, filter: "blur(0px)" }}
+      role="section"
+      className="flex"
+    >
       <p className="text-2xs md:text-xs uppercase tracking-wide text-neutral-900 bg-lime-500 h-8.5 md:h-10 px-3 md:px-4 flex items-center">
-        <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 inline-block mr-2 shrink-0" />
+        <span className="w-1.5 h-1.5 rounded-full bg-neutral-900 inline-block mr-2 shrink-0 animate-pulse" />
         <span className="text-nowrap">Live Markets</span>
       </p>
 
-      <Marquee className="[--duration:15s] p-0 gap-0 bg-neutral-700" pauseOnHover>
-        <CrawlerItem exchange="USD/IDR" value={1} percentage={0.25} status="decrease" />
-        <CrawlerItem exchange="USD/IDR" value={2} percentage={0.25} status="decrease" />
-        <CrawlerItem exchange="USD/IDR" value={3} percentage={0.25} status="increase" />
-        <CrawlerItem exchange="USD/IDR" value={4} percentage={0.25} status="increase" />
-        <CrawlerItem exchange="USD/IDR" value={5} percentage={0.25} status="decrease" />
-        <CrawlerItem exchange="USD/IDR" value={6} percentage={0.25} status="increase" />
+      <Marquee style={myStyle} className={cn("p-0 gap-0 bg-neutral-700")} pauseOnHover>
+        {data.map((d) => (
+          <CrawlerItem key={d.id} data={d} />
+        ))}
       </Marquee>
-    </div>
+    </motion.div>
   );
 }
 
 type CrawlerItemProps = {
-  exchange: string;
-  value: number;
-  percentage: number;
-  status: "increase" | "decrease";
+  data: CrawlerData;
 };
 
 function CrawlerItem(props: CrawlerItemProps) {
-  const { exchange, value, percentage, status } = props;
+  const { data } = props;
 
   return (
     <div className="flex items-center text-2xs md:text-xs tracking-wide gap-2.5 first:border-l border-r border-neutral-500 pr-3 md:pr-5 first:pl-3 md:first:pl-5">
-      <p className="text-neutral-200">{exchange}</p>
-      <p className="text-neutral-50">{value}</p>
-      <p className={cn("flex items-center gap-2", status === "increase" ? "text-green-500" : "text-red-500")}>
-        <HugeiconsIcon icon={TriangleIcon} className={cn("w-1.5 md:w-2", status === "decrease" && "rotate-180")} aria-hidden="true" fill="currentColor" />
-        <span>{percentage}%</span>
+      <p className="text-neutral-200">
+        {data.base}/{data.quote}
+      </p>
+      <p className="text-neutral-50">{data.diff}</p>
+      <p className={cn("flex items-center gap-2", data.growth === "positive" ? "text-green-500" : data.growth === "negative" ? "text-red-500" : "text-neutral-200")}>
+        {data.growth === "positive" ? (
+          <HugeiconsIcon icon={TriangleIcon} className={cn("w-1.5 md:w-2")} aria-hidden="true" fill="currentColor" />
+        ) : data.growth === "negative" ? (
+          <HugeiconsIcon icon={TriangleIcon} className={cn("w-1.5 md:w-2", data.growth === "negative" && "rotate-180")} aria-hidden="true" fill="currentColor" />
+        ) : (
+          <HugeiconsIcon icon={EqualSignIcon} className={cn("w-1.5 md:w-2")} aria-hidden="true" fill="currentColor" />
+        )}
+        <span>{data.growth_percentage}</span>
       </p>
     </div>
   );
