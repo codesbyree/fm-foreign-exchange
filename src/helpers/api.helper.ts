@@ -1,5 +1,5 @@
 import moment from "moment";
-import type { CrawlerData, ExchangeRateResponse } from "../types/app.types";
+import type { CrawlerData, ExchangeRateType, TodayRates } from "../types/app.types";
 
 const API_BASE_URL = "https://api.frankfurter.dev/v2";
 const BASE_CURRENCIES = ["EUR", "USD", "GBP", "JPY", "IDR"];
@@ -32,7 +32,7 @@ export async function getCrawlerData(): Promise<CrawlerData[]> {
       if (!Array.isArray(json)) {
         throw new Error(`Unexpected API response shape for base ${base} on ${date}`);
       }
-      return json as ExchangeRateResponse[];
+      return json as ExchangeRateType[];
     };
 
     // fetch yesterday + today for every base currency, all in parallel
@@ -87,6 +87,50 @@ export async function getCrawlerData(): Promise<CrawlerData[]> {
 }
 
 /**
+ * Fetches the current exchange rate between two currencies, with a bit more details.
+ *
+ * @param base - The currency code to convert from (e.g., 'USD')
+ * @param quote - The currency code to convert to (e.g., 'EUR')
+ * @returns A promise that resolves to the exchange rate data
+ * @throws {Error} If the network request fails, inputs are invalid, or the API returns an error
+ */
+export async function getTodayRate(base: string, quote: string): Promise<TodayRates> {
+  if (!base || !quote) {
+    throw new Error("Both base and target currencies are required.");
+  }
+
+  const url = `${API_BASE_URL}/rates?from=${moment().subtract(1, "days").format("YYYY-MM-DD")}&to=${moment().format("YYYY-MM-DD")}&base=${base.toUpperCase()}&quotes=${quote.toUpperCase()}`;
+
+  try {
+    await delay(300);
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = (await response.json()) as ExchangeRateType[];
+    const [previous, current] = data;
+
+    const todaysRates: TodayRates = {
+      base: current.base,
+      quote: current.quote,
+      rate: current.rate,
+      growth: current.rate - previous.rate > previous.rate ? "positive" : current.rate - previous.rate < previous.rate ? "negative" : "unchanged",
+      growth_percentage: `${(current.rate - previous.rate).toFixed(2)}%`,
+    };
+
+    return todaysRates;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch exchange rate: ${error.message}`, { cause: error });
+    }
+    throw new Error("An unexpected error occurred while fetching the exchange rate.", { cause: error });
+  }
+}
+
+/**
  * Fetches the current exchange rate between two currencies.
  *
  * @param baseCurrency - The currency code to convert from (e.g., 'USD')
@@ -94,7 +138,7 @@ export async function getCrawlerData(): Promise<CrawlerData[]> {
  * @returns A promise that resolves to the exchange rate data
  * @throws {Error} If the network request fails, inputs are invalid, or the API returns an error
  */
-export async function getExchangeRate(baseCurrency: string, targetCurrency: string): Promise<ExchangeRateResponse> {
+export async function getExchangeRate(baseCurrency: string, targetCurrency: string): Promise<ExchangeRateType> {
   if (!baseCurrency || !targetCurrency) {
     throw new Error("Both base and target currencies are required.");
   }
@@ -110,7 +154,7 @@ export async function getExchangeRate(baseCurrency: string, targetCurrency: stri
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
 
-    const data = (await response.json()) as ExchangeRateResponse;
+    const data = (await response.json()) as ExchangeRateType;
     return data;
   } catch (error) {
     if (error instanceof Error) {

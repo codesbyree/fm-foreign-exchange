@@ -7,21 +7,23 @@ export type ConversionLogType = {
   converted_amount: string;
 };
 
-export interface ExchangeRateResponse {
+export type ExchangeRateType = {
   quote: string;
   base: string;
   date: string;
   rate: number;
-}
-
-export type FavoriteConversionType = ExchangeRateResponse & {
-  id: string;
-  diff: string;
-  growth: "positive" | "negative" | "unchanged";
-  growth_percentage: string;
 };
 
-export interface CrawlerData extends ExchangeRateResponse {
+export interface TodayRates extends Omit<ExchangeRateType, "date"> {
+  growth: "positive" | "negative" | "unchanged";
+  growth_percentage: string;
+}
+
+export interface FavoriteConversion extends Omit<ExchangeRateType, "date" | "rate"> {
+  id: string;
+}
+
+export interface CrawlerData extends ExchangeRateType {
   diff: string;
   growth: "positive" | "negative" | "unchanged";
   growth_percentage: string;
