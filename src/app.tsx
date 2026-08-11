@@ -10,7 +10,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route index element={<Navigate to={`history?send=usd&receive=idr`} />} />
+        <Route index element={<Navigate to={`history?base=usd&quote=idr`} />} />
         <Route element={<MainLayout />}>
           <Route path="history" element={<HistoryPage />} />
           <Route path="compare" element={<ComparePage />} />

@@ -13,7 +13,7 @@ export default function AddConversionLogButton() {
 
   const saveToLog = useConversionLogStore((s) => s.saveToLog);
   const baseAmount = useCurrencyStore((s) => s.sendAmountDisplay);
-  const convertedAmount = useCurrencyStore((s) => s.receiveAmountDisplay);
+  const convertedAmount = useCurrencyStore((s) => s.quoteAmountDisplay);
 
   const [logged, setLogged] = useState(false);
 
@@ -21,8 +21,8 @@ export default function AddConversionLogButton() {
     saveToLog({
       base_amount: baseAmount,
       converted_amount: convertedAmount,
-      base_currency: searchParams.get("send") as string,
-      target_currency: searchParams.get("receive") as string,
+      base_currency: searchParams.get("base") as string,
+      target_currency: searchParams.get("quote") as string,
     });
 
     setLogged(true);

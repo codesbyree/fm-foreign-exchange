@@ -12,33 +12,31 @@ export default function ExchangeRateSwapper() {
   const [rotation, setRotation] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { exchangeRate, setExchangeRate, sendAmountDisplay, receiveAmountDisplay, setSendAmountDisplay, setReceiveAmountDisplay } = useCurrencyStore(
+  const { exchangeRate, setExchangeRate, sendAmountDisplay, quoteAmountDisplay, setBaseAmountDisplay, setQuoteAmountDisplay } = useCurrencyStore(
     useShallow((s) => ({
       exchangeRate: s.exchangeRate,
       setExchangeRate: s.setExchangeRate,
       sendAmountDisplay: s.sendAmountDisplay,
-      receiveAmountDisplay: s.receiveAmountDisplay,
-      setSendAmountDisplay: s.setSendAmountDisplay,
-      setReceiveAmountDisplay: s.setReceiveAmountDisplay,
+      quoteAmountDisplay: s.quoteAmountDisplay,
+      setBaseAmountDisplay: s.setBaseAmountDisplay,
+      setQuoteAmountDisplay: s.setQuoteAmountDisplay,
     })),
   );
 
   const handleClick = () => {
-    const sendQuery = searchParams.get("send");
-    const receiveQuery = searchParams.get("receive");
+    const sendQuery = searchParams.get("base");
+    const receiveQuery = searchParams.get("quote");
 
     setSearchParams((searchParam) => {
-      if (receiveQuery) searchParam.set("send", receiveQuery);
-      if (sendQuery) searchParam.set("receive", sendQuery);
+      if (receiveQuery) searchParam.set("base", receiveQuery);
+      if (sendQuery) searchParam.set("quote", sendQuery);
       return searchParam;
     });
 
-    if (exchangeRate > 0) {
-      setExchangeRate(1 / exchangeRate);
-    }
+    if (exchangeRate > 0) setExchangeRate(1 / exchangeRate);
 
-    setSendAmountDisplay(receiveAmountDisplay);
-    setReceiveAmountDisplay(sendAmountDisplay);
+    setBaseAmountDisplay(quoteAmountDisplay);
+    setQuoteAmountDisplay(sendAmountDisplay);
 
     setRotation((prev) => prev + 180);
   };

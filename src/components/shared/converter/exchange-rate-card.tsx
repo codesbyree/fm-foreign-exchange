@@ -13,21 +13,22 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectSear
 import { formatCurrency, unformatToNumber } from "../../../utils/currency.utils";
 
 type Props = ComponentPropsWithoutRef<"div"> & {
-  type: "send" | "receive";
+  type: "base" | "quote";
+  label: string;
 };
 
 export default function ExchangeRateCard(props: Props) {
-  const { type, className } = props;
+  const { type, label, className } = props;
 
-  const { popularCurrencies, addPopularCurrency, exchangeRate, sendAmountDisplay, receiveAmountDisplay, setSendAmountDisplay, setReceiveAmountDisplay } = useCurrencyStore(
+  const { popularCurrencies, addPopularCurrency, exchangeRate, sendAmountDisplay, quoteAmountDisplay, setBaseAmountDisplay, setQuoteAmountDisplay } = useCurrencyStore(
     useShallow((s) => ({
       popularCurrencies: s.popularCurrencies,
       addPopularCurrency: s.addPopularCurrency,
       exchangeRate: s.exchangeRate,
       sendAmountDisplay: s.sendAmountDisplay,
-      receiveAmountDisplay: s.receiveAmountDisplay,
-      setSendAmountDisplay: s.setSendAmountDisplay,
-      setReceiveAmountDisplay: s.setReceiveAmountDisplay,
+      quoteAmountDisplay: s.quoteAmountDisplay,
+      setBaseAmountDisplay: s.setBaseAmountDisplay,
+      setQuoteAmountDisplay: s.setQuoteAmountDisplay,
     })),
   );
 
@@ -69,8 +70,8 @@ export default function ExchangeRateCard(props: Props) {
       return prevParams;
     });
 
-    setSendAmountDisplay("0");
-    setReceiveAmountDisplay("0");
+    setBaseAmountDisplay("0");
+    setQuoteAmountDisplay("0");
 
     addPopularCurrency(currency);
     setSearchQuery("");
@@ -85,8 +86,8 @@ export default function ExchangeRateCard(props: Props) {
     let { value } = e.currentTarget as HTMLInputElement;
 
     if (value === "") {
-      setSendAmountDisplay("0");
-      setReceiveAmountDisplay("0");
+      setBaseAmountDisplay("0");
+      setQuoteAmountDisplay("0");
       return;
     }
 
@@ -95,8 +96,8 @@ export default function ExchangeRateCard(props: Props) {
     value = value.replace(/^0+(?=\d)/, "");
 
     if (value.endsWith(".")) {
-      if (type === "send") setSendAmountDisplay(value);
-      else setReceiveAmountDisplay(value);
+      if (type === "base") setBaseAmountDisplay(value);
+      else setQuoteAmountDisplay(value);
       return;
     }
 
@@ -105,22 +106,22 @@ export default function ExchangeRateCard(props: Props) {
 
     if (isNaN(raw)) return;
 
-    if (type === "send") {
-      setSendAmountDisplay(value);
-      setReceiveAmountDisplay(formatCurrency(raw * exchangeRate));
+    if (type === "base") {
+      setBaseAmountDisplay(formatCurrency(unformatToNumber(value)));
+      setQuoteAmountDisplay(formatCurrency(raw * exchangeRate));
     } else {
-      setReceiveAmountDisplay(value);
-      setSendAmountDisplay(formatCurrency(raw / (exchangeRate || 1)));
+      setQuoteAmountDisplay(formatCurrency(unformatToNumber(value)));
+      setBaseAmountDisplay(formatCurrency(raw / (exchangeRate || 1)));
     }
   };
 
   return (
     <div className={cn("p-4 md:p-5 rounded-2xl bg-neutral-600 border border-neutral-500 space-y-5 w-full", className)}>
-      <h2 className="uppercase text-sm text-neutral-100">{type}</h2>
+      <h2 className="uppercase text-sm text-neutral-100">{label}</h2>
 
       <form onSubmit={handleSubmit} className="flex items-center gap-2 w-full">
         <div className="flex-1">
-          <label className="sr-only" htmlFor={type + "-value"}>
+          <label className="sr-only" htmlFor={label + "-value"}>
             Value
           </label>
 
@@ -129,8 +130,8 @@ export default function ExchangeRateCard(props: Props) {
             id={type + "-value"}
             type="text"
             inputMode="decimal"
-            value={type === "send" ? sendAmountDisplay : receiveAmountDisplay}
-            className={cn("text-3xl xl:text-4xl font-bold p-1", type === "receive" && "text-lime-500")}
+            value={type === "base" ? sendAmountDisplay : quoteAmountDisplay}
+            className={cn("text-3xl xl:text-4xl font-bold p-1", type === "quote" && "text-lime-500")}
             autoComplete="off"
             autoCorrect="off"
           />

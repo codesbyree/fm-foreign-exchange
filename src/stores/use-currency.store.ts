@@ -8,9 +8,9 @@ interface CurrencyState {
   exchangeRate: number;
   setExchangeRate: (rate: number) => void;
   sendAmountDisplay: string;
-  receiveAmountDisplay: string;
-  setSendAmountDisplay: (display: string) => void;
-  setReceiveAmountDisplay: (display: string) => void;
+  quoteAmountDisplay: string;
+  setBaseAmountDisplay: (display: string) => void;
+  setQuoteAmountDisplay: (display: string) => void;
 }
 
 export const useCurrencyStore = create<CurrencyState>()(
@@ -27,9 +27,9 @@ export const useCurrencyStore = create<CurrencyState>()(
           };
         }),
       sendAmountDisplay: "0",
-      receiveAmountDisplay: "0",
-      setSendAmountDisplay: (display: string) => set({ sendAmountDisplay: display }),
-      setReceiveAmountDisplay: (display: string) => set({ receiveAmountDisplay: display }),
+      quoteAmountDisplay: "0",
+      setBaseAmountDisplay: (display: string) => set({ sendAmountDisplay: display }),
+      setQuoteAmountDisplay: (display: string) => set({ quoteAmountDisplay: display }),
     }),
     {
       name: "popular-currency-storage",

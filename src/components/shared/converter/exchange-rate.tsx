@@ -9,19 +9,19 @@ import { useShallow } from "zustand/react/shallow";
 export default function ExchangeRate() {
   const [searchParams] = useSearchParams();
 
-  const { setExchangeRate, setReceiveAmountDisplay, sendAmountDisplay } = useCurrencyStore(
+  const { setExchangeRate, setQuoteAmountDisplay, sendAmountDisplay } = useCurrencyStore(
     useShallow((s) => ({
       setExchangeRate: s.setExchangeRate,
-      setReceiveAmountDisplay: s.setReceiveAmountDisplay,
+      setQuoteAmountDisplay: s.setQuoteAmountDisplay,
       sendAmountDisplay: s.sendAmountDisplay,
-      receiveAmountDisplay: s.receiveAmountDisplay,
+      quoteAmountDisplay: s.quoteAmountDisplay,
     })),
   );
 
-  const baseCurrency = searchParams.get("send");
-  const targetCurrency = searchParams.get("receive");
+  const baseCurrency = searchParams.get("base");
+  const targetCurrency = searchParams.get("quote");
 
-  // 1. Track previous currencies to detect a direct swap
+  // Track previous currencies to detect a direct swap
   const prevBase = useRef(baseCurrency);
   const prevTarget = useRef(targetCurrency);
   const isSwap = useRef(false);
@@ -51,19 +51,19 @@ export default function ExchangeRate() {
     if (data) {
       setExchangeRate(data.rate);
 
-      // 2. ONLY recalculate if it WAS NOT a swap.
+      // ONLY recalculate if it WAS NOT a swap.
       // If it was a swap, Comp 2 already perfectly flipped the display strings.
       if (!isSwap.current) {
         const currentAmount = unformatToNumber(sendAmountRef.current);
         if (!isNaN(currentAmount)) {
-          setReceiveAmountDisplay(formatCurrency(currentAmount * data.rate));
+          setQuoteAmountDisplay(formatCurrency(currentAmount * data.rate));
         }
       }
 
-      // 3. Reset the swap flag so future manual typing/dropdown changes work normally
+      // Reset the swap flag so future manual typing/dropdown changes work normally
       isSwap.current = false;
     }
-  }, [data, setExchangeRate, setReceiveAmountDisplay]);
+  }, [data, setExchangeRate, setQuoteAmountDisplay]);
 
   if (isLoading || isFetching) return <div className="h-3.75 w-30 rounded-xs bg-neutral-400 animate-pulse" />;
   if (!data) return null;
