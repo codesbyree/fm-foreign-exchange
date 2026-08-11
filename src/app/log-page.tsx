@@ -47,10 +47,10 @@ export default function LogPage() {
 
   return (
     <motion.section initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="px-4 py-5 rounded-2xl flex flex-col gap-5 md:px-5 bg-neutral-700 border border-neutral-600">
-      <div className="flex flex-col gap-2.5">
+      <div className="flex flex-col gap-2.5 md:flex-row md:justify-between">
         <h3 className="tracking-widest uppercase text-neutral-50 text-base">Conversion Log</h3>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between md:gap-4 md:flex-row">
           <p className="text-xs uppercase text-neutral-50/70">{conversionLogs.length} Logged</p>
 
           <Button onClick={clearConversions} intent="secondary" className="tracking-widest text-neutral-200">
@@ -88,7 +88,7 @@ function ConversionLogListItem(props: ConversionLogListItemProps) {
       role="li"
       className="flex bg-neutral-600 border border-neutral-500 rounded-[10px] p-3 py-2 gap-2.5 md:gap-4 md:p-4 items-center"
     >
-      <div className="flex-1 flex flex-col gap-1 md:flex-row md:gap-14">
+      <div className="flex-1 grid grid-cols-1 md:grid-cols-[56px_1fr] md:gap-8 gap-1">
         <p className="text-sm text-neutral-200 uppercase tracking-wide">{moment(log.time).fromNow(true)}</p>
 
         <div className="text-neutral-50 uppercase text-sm flex items-center gap-2 tracking-wide">

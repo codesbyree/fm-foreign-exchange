@@ -37,7 +37,7 @@ export default function ExchangeRate() {
     prevTarget.current = targetCurrency;
   }, [baseCurrency, targetCurrency]);
 
-  const { data, isLoading, isFetching } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["exchangeRate", baseCurrency, targetCurrency],
     queryFn: () => getExchangeRate(baseCurrency as string, targetCurrency as string),
     enabled: !!baseCurrency && !!targetCurrency,
@@ -65,7 +65,7 @@ export default function ExchangeRate() {
     }
   }, [data, setExchangeRate, setQuoteAmountDisplay]);
 
-  if (isLoading || isFetching) return <div className="h-3.75 w-30 rounded-xs bg-neutral-400 animate-pulse" />;
+  if (isLoading) return <div className="h-3.75 w-30 rounded-xs bg-neutral-400 animate-pulse" />;
   if (!data) return null;
 
   return (

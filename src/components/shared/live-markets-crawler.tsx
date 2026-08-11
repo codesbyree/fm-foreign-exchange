@@ -2,16 +2,17 @@ import { HugeiconsIcon } from "@hugeicons/react";
 import { EqualSignIcon, TriangleIcon } from "@hugeicons/core-free-icons";
 import { motion } from "motion/react";
 
+import type { CrawlerData } from "../../types/app.types";
 import { cn } from "../../utils/style.utils";
-import { getCrawlerData, type CrawlerData } from "../../helpers/api.helper";
+import { getCrawlerData } from "../../helpers/api.helper";
 
 import { Marquee } from "../ui/marquee";
 import { useQuery } from "@tanstack/react-query";
 
 export default function LiveMarketCrawler() {
-  const { data, isLoading, isFetching } = useQuery({ queryKey: ["crawlerData"], queryFn: getCrawlerData, staleTime: 5 * 60 * 1000 });
+  const { data, isLoading } = useQuery({ queryKey: ["crawlerData"], queryFn: getCrawlerData, staleTime: 5 * 60 * 1000 });
 
-  if (isLoading || isFetching) return <div className="h-8.5 md:h-10"></div>;
+  if (isLoading) return <div className="h-8.5 md:h-10"></div>;
   if (!data) return null;
 
   const myStyle = {
