@@ -23,7 +23,7 @@ moment.locale("en-short", {
   },
 });
 
-import { type ConversionLogType } from "../types/conversion.types";
+import { type ConversionLogType } from "../types/app.types";
 import { useConversionLogStore } from "../stores/use-conversion-log.store";
 
 import { Button } from "../components/ui/button";

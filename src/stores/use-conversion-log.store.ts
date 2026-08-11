@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { ConversionLogType } from "../types/conversion.types";
+import type { ConversionLogType } from "../types/app.types";
 import moment from "moment";
 
 interface ConversionLogState {

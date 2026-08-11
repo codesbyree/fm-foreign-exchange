@@ -1,18 +1,5 @@
 import moment from "moment";
-
-export interface ExchangeRateResponse {
-  quote: string;
-  base: string;
-  date: string;
-  rate: number;
-}
-
-export interface CrawlerData extends ExchangeRateResponse {
-  diff: string;
-  growth: "positive" | "negative" | "unchanged";
-  growth_percentage: string;
-  id: string;
-}
+import type { CrawlerData, ExchangeRateResponse } from "../types/app.types";
 
 const API_BASE_URL = "https://api.frankfurter.dev/v2";
 const BASE_CURRENCIES = ["EUR", "USD", "GBP", "JPY", "IDR"];
