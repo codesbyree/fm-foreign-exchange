@@ -20,12 +20,12 @@ type Props = ComponentPropsWithoutRef<"div"> & {
 export default function ExchangeRateCard(props: Props) {
   const { type, label, className } = props;
 
-  const { popularCurrencies, addPopularCurrency, exchangeRate, sendAmountDisplay, quoteAmountDisplay, setBaseAmountDisplay, setQuoteAmountDisplay } = useCurrencyStore(
+  const { popularCurrencies, addPopularCurrency, exchangeRate, baseAmountDisplay, quoteAmountDisplay, setBaseAmountDisplay, setQuoteAmountDisplay } = useCurrencyStore(
     useShallow((s) => ({
       popularCurrencies: s.popularCurrencies,
       addPopularCurrency: s.addPopularCurrency,
       exchangeRate: s.exchangeRate,
-      sendAmountDisplay: s.sendAmountDisplay,
+      baseAmountDisplay: s.baseAmountDisplay,
       quoteAmountDisplay: s.quoteAmountDisplay,
       setBaseAmountDisplay: s.setBaseAmountDisplay,
       setQuoteAmountDisplay: s.setQuoteAmountDisplay,
@@ -130,7 +130,7 @@ export default function ExchangeRateCard(props: Props) {
             id={type + "-value"}
             type="text"
             inputMode="decimal"
-            value={type === "base" ? sendAmountDisplay : quoteAmountDisplay}
+            value={type === "base" ? baseAmountDisplay : quoteAmountDisplay}
             className={cn("text-3xl xl:text-4xl font-bold p-1", type === "quote" && "text-lime-500")}
             autoComplete="off"
             autoCorrect="off"

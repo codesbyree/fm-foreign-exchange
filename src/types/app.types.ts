@@ -14,6 +14,11 @@ export type ExchangeRateType = {
   rate: number;
 };
 
+export interface RateComparison extends Omit<ExchangeRateType, "date"> {
+  image: string;
+  label: string;
+}
+
 export interface TodayRates extends Omit<ExchangeRateType, "date"> {
   growth: "positive" | "negative" | "unchanged";
   growth_percentage: string;

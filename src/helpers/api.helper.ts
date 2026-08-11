@@ -1,5 +1,6 @@
 import moment from "moment";
-import type { CrawlerData, ExchangeRateType, TodayRates } from "../types/app.types";
+import type { CrawlerData, ExchangeRateType, RateComparison, TodayRates } from "../types/app.types";
+import { currencies } from "../config/currency.config";
 
 const API_BASE_URL = "https://api.frankfurter.dev/v2";
 const BASE_CURRENCIES = ["EUR", "USD", "GBP", "JPY", "IDR"];
@@ -131,6 +132,58 @@ export async function getTodayRate(base: string, quote: string): Promise<TodayRa
 }
 
 /**
+ * Fetches all currency with base currency set.
+ *
+ * @param base - The currency code to convert from (e.g., 'USD')
+ * @returns A promise that resolves to the exchange rate data
+ * @throws {Error} If the network request fails, inputs are invalid, or the API returns an error
+ */
+export async function getRatesComparison(baseCurrency: string): Promise<RateComparison[]> {
+  if (!baseCurrency) {
+    throw new Error("Base currency is required.");
+  }
+
+  const url = `${API_BASE_URL}/rates?base=${baseCurrency.toUpperCase()}`;
+
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = (await response.json()) as ExchangeRateType[];
+    const processedData = data.map((x) => ({ id: x.base.toLowerCase() + x.quote.toLowerCase(), ...x }));
+
+    const dataMap = new Map(processedData.map((y) => [y.id, y]));
+
+    const comparisonData: RateComparison[] = [];
+
+    for (const currency of currencies) {
+      const data = dataMap.get(baseCurrency.toLowerCase() + currency.code);
+      const isExist = comparisonData.filter((data) => data.quote.toLowerCase() === currency.code.toLowerCase()).length > 0;
+
+      if (!data || isExist) continue;
+
+      comparisonData.push({
+        base: data.base,
+        image: currency.image,
+        label: currency.label,
+        quote: data.quote,
+        rate: data.rate,
+      });
+    }
+
+    return comparisonData;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch exchange rate: ${error.message}`, { cause: error });
+    }
+    throw new Error("An unexpected error occurred while fetching the exchange rate.", { cause: error });
+  }
+}
+
+/**
  * Fetches the current exchange rate between two currencies.
  *
  * @param baseCurrency - The currency code to convert from (e.g., 'USD')
@@ -146,8 +199,6 @@ export async function getExchangeRate(baseCurrency: string, targetCurrency: stri
   const url = `${API_BASE_URL}/rate/${baseCurrency.toUpperCase()}/${targetCurrency.toUpperCase()}`;
 
   try {
-    await delay(300);
-
     const response = await fetch(url);
 
     if (!response.ok) {

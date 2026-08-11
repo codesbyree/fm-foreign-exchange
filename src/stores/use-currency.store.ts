@@ -7,7 +7,7 @@ interface CurrencyState {
   addPopularCurrency: (currency: Currency) => void;
   exchangeRate: number;
   setExchangeRate: (rate: number) => void;
-  sendAmountDisplay: string;
+  baseAmountDisplay: string;
   quoteAmountDisplay: string;
   setBaseAmountDisplay: (display: string) => void;
   setQuoteAmountDisplay: (display: string) => void;
@@ -26,9 +26,9 @@ export const useCurrencyStore = create<CurrencyState>()(
             popularCurrencies: [currency, ...filtered].slice(0, 3),
           };
         }),
-      sendAmountDisplay: "0",
+      baseAmountDisplay: "0",
       quoteAmountDisplay: "0",
-      setBaseAmountDisplay: (display: string) => set({ sendAmountDisplay: display }),
+      setBaseAmountDisplay: (display: string) => set({ baseAmountDisplay: display }),
       setQuoteAmountDisplay: (display: string) => set({ quoteAmountDisplay: display }),
     }),
     {

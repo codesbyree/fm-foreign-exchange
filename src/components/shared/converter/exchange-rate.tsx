@@ -9,11 +9,11 @@ import { useShallow } from "zustand/react/shallow";
 export default function ExchangeRate() {
   const [searchParams] = useSearchParams();
 
-  const { setExchangeRate, setQuoteAmountDisplay, sendAmountDisplay } = useCurrencyStore(
+  const { setExchangeRate, setQuoteAmountDisplay, baseAmountDisplay } = useCurrencyStore(
     useShallow((s) => ({
       setExchangeRate: s.setExchangeRate,
       setQuoteAmountDisplay: s.setQuoteAmountDisplay,
-      sendAmountDisplay: s.sendAmountDisplay,
+      baseAmountDisplay: s.baseAmountDisplay,
       quoteAmountDisplay: s.quoteAmountDisplay,
     })),
   );
@@ -44,8 +44,8 @@ export default function ExchangeRate() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const sendAmountRef = useRef(sendAmountDisplay);
-  sendAmountRef.current = sendAmountDisplay;
+  const sendAmountRef = useRef(baseAmountDisplay);
+  sendAmountRef.current = baseAmountDisplay;
 
   useEffect(() => {
     if (data) {

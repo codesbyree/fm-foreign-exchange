@@ -12,7 +12,7 @@ export default function AddConversionLogButton() {
   const [searchParams] = useSearchParams();
 
   const saveToLog = useConversionLogStore((s) => s.saveToLog);
-  const baseAmount = useCurrencyStore((s) => s.sendAmountDisplay);
+  const baseAmount = useCurrencyStore((s) => s.baseAmountDisplay);
   const convertedAmount = useCurrencyStore((s) => s.quoteAmountDisplay);
 
   const [logged, setLogged] = useState(false);

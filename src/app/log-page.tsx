@@ -79,14 +79,13 @@ function ConversionLogListItem(props: ConversionLogListItemProps) {
   const { log } = props;
 
   return (
-    <motion.div
+    <motion.li
       layout
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ type: "spring", stiffness: 320, damping: 32 }}
-      role="li"
-      className="flex bg-neutral-600 border border-neutral-500 rounded-[10px] p-3 py-2 gap-2.5 md:gap-4 md:p-4 items-center"
+      className="flex bg-neutral-600 border border-neutral-500 hover:border-neutral-300 transition-all rounded-[10px] p-3 py-2 gap-2.5 md:gap-4 md:p-4 items-center"
     >
       <div className="flex-1 grid grid-cols-1 md:grid-cols-[56px_1fr] md:gap-8 gap-1">
         <p className="text-sm text-neutral-200 uppercase tracking-wide">{moment(log.time).fromNow(true)}</p>
@@ -106,6 +105,6 @@ function ConversionLogListItem(props: ConversionLogListItemProps) {
       <Button intent="secondary" size="icon" onClick={() => removeFromLog(log.id)}>
         <HugeiconsIcon icon={Trash} size={12} />
       </Button>
-    </motion.div>
+    </motion.li>
   );
 }

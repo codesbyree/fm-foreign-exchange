@@ -20,10 +20,10 @@ export default function FavoritesPage() {
   if (!favoriteConversions.length)
     return (
       <Empty>
-        <EmptyTitle>No conversions logged yet</EmptyTitle>
+        <EmptyTitle>No pinned pairs yet</EmptyTitle>
         <EmptyDescription>
-          Every conversion is recorded here automatically when you tap LOG CONVERSION.
-          <br className="xl:block hidden" /> Your log is private to this session and this browser.
+          Pin a pair to track its rate here. <br className="xl:block hidden" />
+          Tap the star icon on any conversion or comparison row.
         </EmptyDescription>
       </Empty>
     );
@@ -74,19 +74,28 @@ function FavoriteConversionItem(props: ConversionLogListItemProps) {
     setExchangeRate(data?.rate ?? 0);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLLIElement>) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      updateExchangeRate();
+    }
+  };
+
   if (isLoading || !data) return <div className="flex bg-neutral-600 border border-neutral-500 rounded-[10px] h-14.75" />;
 
   return (
-    <motion.div
+    <motion.li
       layout
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -10 }}
       transition={{ type: "spring", stiffness: 320, damping: 32 }}
-      role="li"
-      className="flex bg-neutral-600 border border-neutral-500 rounded-[10px] p-3 py-2 gap-5 md:p-4 md:py-2 items-center"
+      tabIndex={0}
+      className="cursor-pointer flex bg-neutral-600 border border-neutral-500 hover:border-neutral-300 transition-all rounded-[10px] p-3 py-2 gap-5 md:p-4 md:py-2 items-center outline outline-transparent focus-visible:outline-lime-500"
+      onClick={updateExchangeRate}
+      onKeyDown={handleKeyDown}
     >
-      <div role="button" onClick={updateExchangeRate} className="flex-1 flex justify-between cursor-pointer">
+      <div className="flex-1 flex justify-between">
         <div className="text-neutral-50 uppercase text-sm flex items-center gap-2 tracking-wide flex-1">
           <p>{favorite.base}</p>
           <HugeiconsIcon icon={ArrowRight02Icon} size={16} className="text-neutral-200" />
@@ -108,9 +117,18 @@ function FavoriteConversionItem(props: ConversionLogListItemProps) {
         </div>
       </div>
 
-      <Button intent="outline" size="icon" className="text-lime-500!" onClick={() => removeFromFavorite(favorite.id)}>
+      <Button
+        intent="outline"
+        size="icon"
+        className="text-lime-500!"
+        onClick={(e) => {
+          e.stopPropagation();
+          removeFromFavorite(favorite.id);
+        }}
+        onKeyDown={(e) => e.stopPropagation()}
+      >
         <HugeiconsIcon icon={StarIcon} size={12} fill="currentColor" />
       </Button>
-    </motion.div>
+    </motion.li>
   );
 }

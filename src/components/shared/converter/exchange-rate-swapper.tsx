@@ -12,11 +12,11 @@ export default function ExchangeRateSwapper() {
   const [rotation, setRotation] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const { exchangeRate, setExchangeRate, sendAmountDisplay, quoteAmountDisplay, setBaseAmountDisplay, setQuoteAmountDisplay } = useCurrencyStore(
+  const { exchangeRate, setExchangeRate, baseAmountDisplay, quoteAmountDisplay, setBaseAmountDisplay, setQuoteAmountDisplay } = useCurrencyStore(
     useShallow((s) => ({
       exchangeRate: s.exchangeRate,
       setExchangeRate: s.setExchangeRate,
-      sendAmountDisplay: s.sendAmountDisplay,
+      baseAmountDisplay: s.baseAmountDisplay,
       quoteAmountDisplay: s.quoteAmountDisplay,
       setBaseAmountDisplay: s.setBaseAmountDisplay,
       setQuoteAmountDisplay: s.setQuoteAmountDisplay,
@@ -36,7 +36,7 @@ export default function ExchangeRateSwapper() {
     if (exchangeRate > 0) setExchangeRate(1 / exchangeRate);
 
     setBaseAmountDisplay(quoteAmountDisplay);
-    setQuoteAmountDisplay(sendAmountDisplay);
+    setQuoteAmountDisplay(baseAmountDisplay);
 
     setRotation((prev) => prev + 180);
   };

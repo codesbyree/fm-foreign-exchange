@@ -84,7 +84,6 @@ export const currencies: Currency[] = [
   { code: "cny", label: "Chinese Yuan", image: ChineseYuan },
 
   { code: "cop", label: "Colombian Peso", image: ColombianPeso },
-  { code: "eur", label: "Euro (Cyprus)", image: CyprusEuro },
   { code: "czk", label: "Czech Koruna", image: CzechKoruna },
   { code: "dkk", label: "Danish Krone", image: DanishKrone },
   { code: "egp", label: "Egyptian Pound", image: EgyptianPound },
@@ -93,7 +92,6 @@ export const currencies: Currency[] = [
   { code: "hkd", label: "Hong Kong Dollar", image: HongKongDollar },
   { code: "aud", label: "Australian Dollar (HM)", image: HMDollar },
   { code: "hnl", label: "Honduran Lempira", image: HonduranLempira },
-  { code: "eur", label: "Euro (Croatia)", image: CroatianEuro },
 
   { code: "htg", label: "Haitian Gourde", image: HaitianGourde },
   { code: "huf", label: "Hungarian Forint", image: HungarianForint },
