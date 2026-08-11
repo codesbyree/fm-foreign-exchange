@@ -1,5 +1,5 @@
-import { useConversionLogStore } from "../../stores/use-conversion-log.store";
-import { TabMenuNotification } from "./tab-menu";
+import { useConversionLogStore } from "../../../stores/use-conversion-log.store";
+import { TabMenuNotification } from "../tab-menu";
 
 export default function LoggedRatesChip() {
   const conversionLogs = useConversionLogStore((s) => s.logs);

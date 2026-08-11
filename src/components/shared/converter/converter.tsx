@@ -5,7 +5,7 @@ import { Button } from "../../ui/button";
 import ExchangeRate from "./exchange-rate";
 import ExchangeRateCard from "./exchange-rate-card";
 import ExchangeRateSwapper from "./exchange-rate-swapper";
-import AddConversionLogButton from "../add-conversion-log-button";
+import AddConversionLogButton from "../conversion-log/add-conversion-log-button";
 
 export default function Converter() {
   return (

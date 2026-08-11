@@ -4,7 +4,7 @@ import Header from "../shared/header";
 import LiveMarketCrawler from "../shared/live-markets-crawler";
 import { TabMenu, TabMenuItem } from "../shared/tab-menu";
 import FavoriteRatesChip from "../shared/favorite-rates-chip";
-import LoggedRatesChip from "../shared/logged-rates-chip";
+import LoggedRatesChip from "../shared/conversion-log/logged-rates-chip";
 import Converter from "../shared/converter/converter";
 
 export default function MainLayout() {

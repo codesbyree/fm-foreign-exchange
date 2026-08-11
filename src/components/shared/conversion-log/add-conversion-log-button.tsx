@@ -2,10 +2,10 @@ import { useState } from "react";
 import { HugeiconsIcon } from "@hugeicons/react";
 import { CheckIcon } from "@hugeicons/core-free-icons";
 
-import { useConversionLogStore } from "../../stores/use-conversion-log.store";
+import { useConversionLogStore } from "../../../stores/use-conversion-log.store";
 
-import { Button } from "../ui/button";
-import { useCurrencyStore } from "../../stores/use-currency.store";
+import { Button } from "../../ui/button";
+import { useCurrencyStore } from "../../../stores/use-currency.store";
 import { useSearchParams } from "react-router";
 
 export default function AddConversionLogButton() {
