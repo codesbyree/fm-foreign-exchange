@@ -49,7 +49,7 @@ export default function ComparePage() {
 
   return (
     <motion.section initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="px-4 py-5 rounded-2xl flex flex-col gap-5 md:px-5 bg-neutral-700 border border-neutral-600">
-      <div className="flex felx-col md:flex-row md:justify-between gap-2.5">
+      <div className="flex flex-col md:flex-row md:justify-between gap-2.5">
         <h3 className="tracking-widest uppercase">
           <span className="text-sm text-neutral-200 mr-3">Multi-Currency</span>
           <BaseAmountViewer />
