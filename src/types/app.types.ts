@@ -1,3 +1,7 @@
+export type RateGrowthType = "positive" | "negative" | "unchanged";
+
+export type DateRangeTypes = "1d" | "1w" | "1m" | "3m" | "1y" | "5y";
+
 export type ConversionLogType = {
   id: string;
   time: string;
@@ -20,7 +24,7 @@ export interface RateComparison extends Omit<ExchangeRateType, "date"> {
 }
 
 export interface TodayRates extends Omit<ExchangeRateType, "date"> {
-  growth: "positive" | "negative" | "unchanged";
+  growth: RateGrowthType;
   growth_percentage: string;
 }
 
@@ -30,7 +34,16 @@ export interface FavoriteConversion extends Omit<ExchangeRateType, "date" | "rat
 
 export interface CrawlerData extends ExchangeRateType {
   diff: string;
-  growth: "positive" | "negative" | "unchanged";
+  growth: RateGrowthType;
   growth_percentage: string;
   id: string;
+}
+
+export interface RateHistoryData {
+  open: number;
+  last: number;
+  change: string;
+  growth: RateGrowthType;
+  growth_percentage: string;
+  chart_data: { time: string; value: number }[];
 }

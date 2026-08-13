@@ -9,7 +9,7 @@ import Converter from "../shared/converter/converter";
 
 export default function MainLayout() {
   return (
-    <div className="bg-background">
+    <div className="bg-background no-scrollbar h-dvh overflow-auto">
       <Header />
       <LiveMarketCrawler />
 

@@ -1,5 +1,5 @@
 import moment from "moment";
-import type { CrawlerData, ExchangeRateType, RateComparison, TodayRates } from "../types/app.types";
+import type { CrawlerData, DateRangeTypes, ExchangeRateType, RateComparison, RateGrowthType, RateHistoryData, TodayRates } from "../types/app.types";
 import { currencies } from "../config/currency.config";
 
 const API_BASE_URL = "https://api.frankfurter.dev/v2";
@@ -175,6 +175,91 @@ export async function getRatesComparison(baseCurrency: string): Promise<RateComp
     }
 
     return comparisonData;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch exchange rate: ${error.message}`, { cause: error });
+    }
+    throw new Error("An unexpected error occurred while fetching the exchange rate.", { cause: error });
+  }
+}
+
+/**
+ * Fetches currency exchange rate history and calculates growth metrics.
+ *
+ * @param baseCurrency - The currency code to convert from (e.g., 'USD')
+ * @param targetCurrency - The currency code to convert to (e.g., 'EUR')
+ * @param duration - The time duration for the history (e.g., '1d', '1w', '1m', '3m', '1y', '5y')
+ * @returns A promise that resolves to the calculated exchange rate data
+ * @throws {Error} If the network request fails, inputs are invalid, or the API returns an error
+ */
+export async function getRatesHistory(baseCurrency: string, targetCurrency: string, duration: DateRangeTypes): Promise<RateHistoryData> {
+  if (!baseCurrency || !targetCurrency) throw new Error("Both base and target currencies are required.");
+  if (!duration) throw new Error("Duration is needed.");
+
+  let fromDate = moment().subtract(1, "days");
+
+  switch (duration) {
+    case "1w":
+      fromDate = moment().subtract(1, "weeks");
+      break;
+    case "1m":
+      fromDate = moment().subtract(1, "months");
+      break;
+    case "3m":
+      fromDate = moment().subtract(3, "months");
+      break;
+    case "1y":
+      fromDate = moment().subtract(1, "years");
+      break;
+    case "5y":
+      fromDate = moment().subtract(5, "years");
+      break;
+  }
+
+  const url = `${API_BASE_URL}/rates?from=${fromDate.format("YYYY-MM-DD")}&base=${baseCurrency}&quotes=${targetCurrency}`;
+
+  try {
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = (await response.json()) as ExchangeRateType[];
+
+    if (!data || data.length === 0) {
+      throw new Error("No exchange rate data found for the specified period.");
+    }
+
+    const sortedData = data.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    const open = sortedData[0].rate;
+    const last = sortedData[sortedData.length - 1].rate;
+
+    const changeValue = last - open;
+    let growth: RateGrowthType = "unchanged";
+    if (changeValue > 0) growth = "positive";
+    else if (changeValue < 0) growth = "negative";
+
+    const growthPercentageValue = open !== 0 ? (changeValue / open) * 100 : 0;
+
+    const changeStr = changeValue.toFixed(2);
+    const sign = growthPercentageValue > 0 ? "+" : "";
+    const growthPercentageStr = `${sign}${growthPercentageValue.toFixed(2)}%`;
+
+    const chart_data = sortedData.map((item) => ({
+      time: item.date,
+      value: item.rate,
+    }));
+
+    return {
+      open,
+      last,
+      change: changeStr,
+      growth,
+      growth_percentage: growthPercentageStr,
+      chart_data,
+    };
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to fetch exchange rate: ${error.message}`, { cause: error });
