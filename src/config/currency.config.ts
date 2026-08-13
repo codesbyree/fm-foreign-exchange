@@ -11,7 +11,6 @@ import ChileanPeso from "../assets/images/flags/cl.webp";
 import ChineseYuan from "../assets/images/flags/cn.webp";
 
 import ColombianPeso from "../assets/images/flags/co.webp";
-import CyprusEuro from "../assets/images/flags/cy.webp";
 import CzechKoruna from "../assets/images/flags/cz.webp";
 import DanishKrone from "../assets/images/flags/dk.webp";
 import EgyptianPound from "../assets/images/flags/eg.webp";
@@ -20,7 +19,6 @@ import BritishPound from "../assets/images/flags/gb.webp";
 import HongKongDollar from "../assets/images/flags/hk.webp";
 import HMDollar from "../assets/images/flags/hm.webp";
 import HonduranLempira from "../assets/images/flags/hn.webp";
-import CroatianEuro from "../assets/images/flags/hr.webp";
 
 import HaitianGourde from "../assets/images/flags/ht.webp";
 import HungarianForint from "../assets/images/flags/hu.webp";
