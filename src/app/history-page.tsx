@@ -6,9 +6,10 @@ import { useSearchParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import { getRatesHistory } from "../helpers/api.helper";
 import type { DateRangeTypes } from "../types/app.types";
+import { useEffect } from "react";
 
 export default function HistoryPage() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const baseCurrency = searchParams.get("base");
   const targetCurrency = searchParams.get("quote");
@@ -20,6 +21,13 @@ export default function HistoryPage() {
     enabled: !!baseCurrency && !!targetCurrency && !!duration,
     staleTime: 3 * 60 * 1000,
   });
+
+  useEffect(() => {
+    if (!searchParams.get("tab")) {
+      const currentSearchParams = Object.fromEntries(searchParams.entries());
+      setSearchParams({ ...currentSearchParams, tab: "1m" });
+    }
+  }, []);
 
   if (isLoading)
     return (
@@ -34,7 +42,11 @@ export default function HistoryPage() {
       <Empty>
         <EmptyTitle>No chart data available</EmptyTitle>
         <EmptyDescription>
-          We couldn't load rate history for USD/EUR right now. <br className="xl:block hidden" />
+          We couldn't load rate history for{" "}
+          <span className="uppercase">
+            {baseCurrency}/{targetCurrency}
+          </span>{" "}
+          right now. <br className="xl:block hidden" />
           This usually clears up in a minute.
         </EmptyDescription>
       </Empty>

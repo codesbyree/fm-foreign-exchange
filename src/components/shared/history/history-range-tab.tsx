@@ -1,5 +1,4 @@
 import { motion } from "motion/react";
-import { useEffect } from "react";
 import { useSearchParams } from "react-router";
 
 import type { DateRangeTypes } from "../../../types/app.types";
@@ -15,13 +14,6 @@ export default function HistoryRangeTab() {
     const currentSearchParams = Object.fromEntries(searchParams.entries());
     setSearchParams({ ...currentSearchParams, tab });
   };
-
-  useEffect(() => {
-    if (!searchParams.get("tab")) {
-      const currentSearchParams = Object.fromEntries(searchParams.entries());
-      setSearchParams({ ...currentSearchParams, tab: "1m" });
-    }
-  }, []);
 
   return (
     <motion.nav initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring", stiffness: 320, damping: 32 }}>
