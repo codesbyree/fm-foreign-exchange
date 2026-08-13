@@ -121,7 +121,7 @@ export default function ExchangeRateCard(props: Props) {
 
       <form onSubmit={handleSubmit} className="flex items-center gap-2 w-full">
         <div className="flex-1">
-          <label className="sr-only" htmlFor={label + "-value"}>
+          <label className="sr-only" htmlFor={type + "-value"}>
             Value
           </label>
 
