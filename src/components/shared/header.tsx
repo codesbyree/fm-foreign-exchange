@@ -9,7 +9,7 @@ export default function Header() {
       </a>
 
       <div className="flex items-center gap-2 md:gap-4 text-neutral-200 uppercase text-2xs md:text-sm tracking-tight">
-        <p>55 Currencies</p>
+        <p>58 Currencies</p>
         <span className="w-0.5 h-0.5 rounded-full bg-neutral-200" />
         <p>EOD</p>
         <span className="w-0.5 h-0.5 rounded-full bg-neutral-200" />
