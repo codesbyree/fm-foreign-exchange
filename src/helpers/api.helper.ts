@@ -21,7 +21,7 @@ export const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve
  */
 export async function getCrawlerData(): Promise<CrawlerData[]> {
   const today = moment().format("YYYY-MM-DD");
-  const yesterday = moment().subtract(7, "days").format("YYYY-MM-DD");
+  const yesterday = moment().subtract(1, "days").format("YYYY-MM-DD");
 
   try {
     const fetchRates = async (date: string, base: string) => {
@@ -65,6 +65,7 @@ export async function getCrawlerData(): Promise<CrawlerData[]> {
       const growth: CrawlerData["growth"] = diff > 0 ? "positive" : diff < 0 ? "negative" : "unchanged";
 
       const growthPercentage = yd.rate !== 0 ? (diff / yd.rate) * 100 : 0;
+      const sign = growthPercentage > 0 ? "+" : "";
 
       crawlerData.push({
         id: td.id,
@@ -74,7 +75,7 @@ export async function getCrawlerData(): Promise<CrawlerData[]> {
         rate: td.rate,
         diff: td.rate.toFixed(2),
         growth,
-        growth_percentage: `${growthPercentage.toFixed(2)}%`,
+        growth_percentage: `${sign}${growthPercentage.toFixed(2)}%`,
       });
     }
 
@@ -248,9 +249,9 @@ export async function getRatesHistory(baseCurrency: string, targetCurrency: stri
 
     const growthPercentageValue = open !== 0 ? (changeValue / open) * 100 : 0;
 
-    const changeStr = changeValue.toFixed(2);
     const sign = growthPercentageValue > 0 ? "+" : "";
     const growthPercentageStr = `${sign}${growthPercentageValue.toFixed(2)}%`;
+    const changeStr = `${sign}${changeValue.toFixed(2)}`;
 
     const chart_data = sortedData.map((item) => ({
       time: item.date,

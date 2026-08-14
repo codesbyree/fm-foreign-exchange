@@ -1,5 +1,5 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { ArrowRight02Icon, EqualSignIcon, StarIcon, TriangleIcon } from "@hugeicons/core-free-icons";
+import { ArrowRight02Icon, StarIcon, TriangleIcon } from "@hugeicons/core-free-icons";
 import { motion, AnimatePresence } from "motion/react";
 import { useQuery } from "@tanstack/react-query";
 
@@ -7,12 +7,12 @@ import { formatCurrency } from "../utils/currency.utils";
 import { cn } from "../utils/style.utils";
 import { useSearchParams } from "react-router";
 import { getTodayRate } from "../helpers/api.helper";
-import { type FavoriteConversion } from "../types/app.types";
+import { type FavoriteConversion, type TodayRates } from "../types/app.types";
 import { useFavoriteConversionStore } from "../stores/use-favorites-conversion.store";
+import { useCurrencyStore } from "../stores/use-currency.store";
 
 import { Button } from "../components/ui/button";
 import { Empty, EmptyDescription, EmptyTitle } from "../components/ui/empty";
-import { useCurrencyStore } from "../stores/use-currency.store";
 
 export default function FavoritesPage() {
   const favoriteConversions = useFavoriteConversionStore((s) => s.favorites);
@@ -38,7 +38,7 @@ export default function FavoritesPage() {
       <motion.ul layout className="flex flex-col gap-3">
         <AnimatePresence mode="popLayout">
           {favoriteConversions.map((log) => (
-            <FavoriteConversionItem key={log.id} favorite={log} />
+            <FavoriteConversionItemWrapper key={log.id} favorite={log} />
           ))}
         </AnimatePresence>
       </motion.ul>
@@ -46,32 +46,43 @@ export default function FavoritesPage() {
   );
 }
 
-type ConversionLogListItemProps = {
+type ConversionLogListItemWrapperProps = {
   favorite: FavoriteConversion;
 };
 
-function FavoriteConversionItem(props: ConversionLogListItemProps) {
-  const [, setSearchParams] = useSearchParams();
-
-  const removeFromFavorite = useFavoriteConversionStore((s) => s.removeFromFavorite);
-  const setBaseAmountDisplay = useCurrencyStore((s) => s.setBaseAmountDisplay);
-  const setQuoteAmountDisplay = useCurrencyStore((s) => s.setQuoteAmountDisplay);
-  const setExchangeRate = useCurrencyStore((s) => s.setExchangeRate);
+function FavoriteConversionItemWrapper(props: ConversionLogListItemWrapperProps) {
   const { favorite } = props;
 
   const { data, isLoading } = useQuery({
     queryKey: ["favorite-conversion", favorite.id],
     queryFn: () => getTodayRate(favorite.base, favorite.quote),
     enabled: !!favorite.base && !!favorite.quote,
-    refetchInterval: 1 * 60 * 1000,
     staleTime: 1 * 60 * 1000,
   });
 
+  if (isLoading) return <div className="flex bg-neutral-600 border border-neutral-500 rounded-[10px] h-14.75 animate-pulse" />;
+  if (!data) return null;
+  return <FavoriteConversionItem data={data} />;
+}
+
+type FavoriteConversionItemProps = {
+  data: TodayRates;
+};
+
+function FavoriteConversionItem(props: FavoriteConversionItemProps) {
+  const { data } = props;
+  const [, setSearchParams] = useSearchParams();
+
+  const removeFromFavorite = useFavoriteConversionStore((s) => s.removeFromFavorite);
+  const setBaseAmountDisplay = useCurrencyStore((s) => s.setBaseAmountDisplay);
+  const setQuoteAmountDisplay = useCurrencyStore((s) => s.setQuoteAmountDisplay);
+  const setExchangeRate = useCurrencyStore((s) => s.setExchangeRate);
+
   const updateExchangeRate = () => {
-    setSearchParams({ base: data?.base.toLowerCase() ?? "usd", quote: data?.quote.toLowerCase() ?? "idr" });
-    setBaseAmountDisplay("0");
-    setQuoteAmountDisplay("0");
-    setExchangeRate(data?.rate ?? 0);
+    setSearchParams({ base: data.base.toLowerCase() ?? "usd", quote: data.quote.toLowerCase() ?? "idr" });
+    setBaseAmountDisplay("1");
+    setQuoteAmountDisplay(formatCurrency(1 * data.rate));
+    setExchangeRate(data.rate);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLLIElement>) => {
@@ -80,9 +91,6 @@ function FavoriteConversionItem(props: ConversionLogListItemProps) {
       updateExchangeRate();
     }
   };
-
-  if (isLoading) return <div className="flex bg-neutral-600 border border-neutral-500 rounded-[10px] h-14.75 animate-pulse" />;
-  if (!data) return null;
 
   return (
     <motion.li
@@ -98,20 +106,20 @@ function FavoriteConversionItem(props: ConversionLogListItemProps) {
     >
       <div className="flex-1 flex justify-between">
         <div className="text-neutral-50 uppercase text-sm flex items-center gap-2 tracking-wide flex-1">
-          <p>{favorite.base}</p>
+          <p>{data.base}</p>
           <HugeiconsIcon icon={ArrowRight02Icon} size={16} className="text-neutral-200" />
-          <p>{favorite.quote}</p>
+          <p>{data.quote}</p>
         </div>
 
         <div className="flex flex-col text-base tracking-wide items-end">
           <p className="text-neutral-100">{formatCurrency(data?.rate || 0)}</p>
-          <p className={cn("text-2xs flex items-center gap-2", data?.growth === "positive" ? "text-lime-500" : data?.growth === "negative" ? "text-red-500" : "text-neutral-200")}>
+          <p className={cn("text-2xs flex items-center gap-1", data?.growth === "positive" ? "text-lime-500" : data?.growth === "negative" ? "text-red-500" : "text-neutral-200")}>
             {data?.growth === "positive" ? (
               <HugeiconsIcon icon={TriangleIcon} aria-hidden="true" fill="currentColor" size={6} />
             ) : data?.growth === "negative" ? (
               <HugeiconsIcon icon={TriangleIcon} className={cn(data.growth === "negative" && "rotate-180")} aria-hidden="true" fill="currentColor" size={6} />
             ) : (
-              <HugeiconsIcon icon={EqualSignIcon} aria-hidden="true" fill="currentColor" size={6} />
+              <span></span>
             )}
             <span>{data?.growth_percentage}</span>
           </p>
@@ -124,7 +132,7 @@ function FavoriteConversionItem(props: ConversionLogListItemProps) {
         className="text-lime-500!"
         onClick={(e) => {
           e.stopPropagation();
-          removeFromFavorite(favorite.id);
+          removeFromFavorite((data.base + data.quote).toLowerCase());
         }}
         onKeyDown={(e) => e.stopPropagation()}
       >

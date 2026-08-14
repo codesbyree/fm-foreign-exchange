@@ -1,5 +1,5 @@
 import { HugeiconsIcon } from "@hugeicons/react";
-import { EqualSignIcon, TriangleIcon } from "@hugeicons/core-free-icons";
+import { TriangleIcon } from "@hugeicons/core-free-icons";
 import { motion } from "motion/react";
 
 import type { CrawlerData } from "../../types/app.types";
@@ -54,13 +54,13 @@ function CrawlerItem(props: CrawlerItemProps) {
         {data.base}/{data.quote}
       </p>
       <p className="text-neutral-50">{data.diff}</p>
-      <p className={cn("flex items-center gap-2", data.growth === "positive" ? "text-green-500" : data.growth === "negative" ? "text-red-500" : "text-neutral-200")}>
+      <p className={cn("flex items-center gap-1", data.growth === "positive" ? "text-green-500" : data.growth === "negative" ? "text-red-500" : "text-neutral-200")}>
         {data.growth === "positive" ? (
           <HugeiconsIcon icon={TriangleIcon} className={cn("w-1.5 md:w-2")} aria-hidden="true" fill="currentColor" />
         ) : data.growth === "negative" ? (
           <HugeiconsIcon icon={TriangleIcon} className={cn("w-1.5 md:w-2", data.growth === "negative" && "rotate-180")} aria-hidden="true" fill="currentColor" />
         ) : (
-          <HugeiconsIcon icon={EqualSignIcon} className={cn("w-1.5 md:w-2")} aria-hidden="true" fill="currentColor" />
+          <span></span>
         )}
         <span>{data.growth_percentage}</span>
       </p>

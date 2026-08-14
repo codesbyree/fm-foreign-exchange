@@ -21,7 +21,7 @@ export default function HistoryPage() {
     queryKey: [baseCurrency, targetCurrency, duration],
     queryFn: () => getRatesHistory(baseCurrency ?? "usd", targetCurrency ?? "idr", (duration ?? "1m") as DateRangeTypes),
     enabled: !!baseCurrency && !!targetCurrency && !!duration,
-    staleTime: 3 * 60 * 1000,
+    staleTime: 1 * 60 * 1000,
     placeholderData: keepPreviousData,
   });
 
@@ -57,9 +57,10 @@ export default function HistoryPage() {
 
   return (
     <section className="flex flex-col gap-4 md:gap-5">
-      <div className="flex flex-col gap-5 xl:flex-row xl:items-end">
+      <div className="flex flex-col gap-5 xl:flex-row xl:items-end relative">
         <ConversionStats change={data.change} growth={data.growth} growth_percentage={data.growth_percentage} last={data.last} open={data.open} />
         <HistoryRangeTab />
+        {isLoading && <span className="absolute top-5 right-5 text-neutral-200 text-xs">Updating chart data</span>}
       </div>
 
       <RateHistoryChart last={data.last} chart_data={data.chart_data} />

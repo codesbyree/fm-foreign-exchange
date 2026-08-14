@@ -70,8 +70,8 @@ export default function ExchangeRateCard(props: Props) {
       return prevParams;
     });
 
-    setBaseAmountDisplay("0");
-    setQuoteAmountDisplay("0");
+    setBaseAmountDisplay(baseAmountDisplay);
+    setQuoteAmountDisplay(formatCurrency(unformatToNumber(baseAmountDisplay) * exchangeRate));
 
     addPopularCurrency(currency);
     setSearchQuery("");
