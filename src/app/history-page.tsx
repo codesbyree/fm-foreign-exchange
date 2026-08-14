@@ -17,7 +17,7 @@ export default function HistoryPage() {
   const targetCurrency = searchParams.get("quote");
   const duration = searchParams.get("tab");
 
-  const { data } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: [baseCurrency, targetCurrency, duration],
     queryFn: () => getRatesHistory(baseCurrency ?? "usd", targetCurrency ?? "idr", (duration ?? "1m") as DateRangeTypes),
     enabled: !!baseCurrency && !!targetCurrency && !!duration,
@@ -31,6 +31,14 @@ export default function HistoryPage() {
       setSearchParams({ ...currentSearchParams, tab: "1m" });
     }
   }, []);
+
+  if (isLoading && !data)
+    return (
+      <Empty>
+        <EmptyTitle>We are fetching the chart data</EmptyTitle>
+        <EmptyDescription>It might take a while. Please be patient.</EmptyDescription>
+      </Empty>
+    );
 
   if (!data)
     return (
