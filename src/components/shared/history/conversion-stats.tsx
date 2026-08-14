@@ -38,7 +38,7 @@ export default function ConversionStats(props: Props) {
       <Card className="md:min-w-35">
         <CardTitle>CHANGE</CardTitle>
         <CardContent>
-          <p className="text-xl text-lime-500 tracking-wide">{change}</p>
+          <p className={cn("flex gap-3 items-center text-xl tracking-wide", growth === "positive" ? "text-lime-500" : growth === "negative" ? "text-red-500" : "text-neutral-200")}>{change}</p>
         </CardContent>
       </Card>
 

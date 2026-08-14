@@ -1,12 +1,14 @@
+import { useSearchParams } from "react-router";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
+
+import { getRatesHistory } from "../helpers/api.helper";
+import type { DateRangeTypes } from "../types/app.types";
+
 import { Empty, EmptyDescription, EmptyTitle } from "../components/ui/empty";
 import ConversionStats from "../components/shared/history/conversion-stats";
 import HistoryRangeTab from "../components/shared/history/history-range-tab";
 import RateHistoryChart from "../components/shared/history/rate-history-chart";
-import { useSearchParams } from "react-router";
-import { useQuery } from "@tanstack/react-query";
-import { getRatesHistory } from "../helpers/api.helper";
-import type { DateRangeTypes } from "../types/app.types";
-import { useEffect } from "react";
 
 export default function HistoryPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -15,11 +17,12 @@ export default function HistoryPage() {
   const targetCurrency = searchParams.get("quote");
   const duration = searchParams.get("tab");
 
-  const { data, isLoading } = useQuery({
+  const { data } = useQuery({
     queryKey: [baseCurrency, targetCurrency, duration],
     queryFn: () => getRatesHistory(baseCurrency ?? "usd", targetCurrency ?? "idr", (duration ?? "1m") as DateRangeTypes),
     enabled: !!baseCurrency && !!targetCurrency && !!duration,
     staleTime: 3 * 60 * 1000,
+    placeholderData: keepPreviousData,
   });
 
   useEffect(() => {
@@ -28,14 +31,6 @@ export default function HistoryPage() {
       setSearchParams({ ...currentSearchParams, tab: "1m" });
     }
   }, []);
-
-  if (isLoading)
-    return (
-      <Empty>
-        <EmptyTitle>We are fetching the chart data</EmptyTitle>
-        <EmptyDescription>Please be patient. It might take a while.</EmptyDescription>
-      </Empty>
-    );
 
   if (!data)
     return (

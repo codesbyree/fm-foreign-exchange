@@ -96,7 +96,7 @@ export default function RateHistoryChart(props: Props) {
         </p>
       </div>
 
-      <div ref={chartContainerRef} className="w-full" />
+      <div ref={chartContainerRef} className="w-full h-75" />
     </motion.div>
   );
 }
