@@ -81,7 +81,8 @@ function FavoriteConversionItem(props: ConversionLogListItemProps) {
     }
   };
 
-  if (isLoading || !data) return <div className="flex bg-neutral-600 border border-neutral-500 rounded-[10px] h-14.75" />;
+  if (isLoading) return <div className="flex bg-neutral-600 border border-neutral-500 rounded-[10px] h-14.75 animate-pulse" />;
+  if (!data) return null;
 
   return (
     <motion.li

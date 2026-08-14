@@ -103,26 +103,31 @@ export async function getTodayRate(base: string, quote: string): Promise<TodayRa
   const url = `${API_BASE_URL}/rates?from=${moment().subtract(1, "days").format("YYYY-MM-DD")}&to=${moment().format("YYYY-MM-DD")}&base=${base.toUpperCase()}&quotes=${quote.toUpperCase()}`;
 
   try {
-    await delay(300);
-
     const response = await fetch(url);
 
     if (!response.ok) {
       throw new Error(`API Error: ${response.status} ${response.statusText}`);
     }
 
-    const data = (await response.json()) as ExchangeRateType[];
+    const data = (await response.json()) as [ExchangeRateType, ExchangeRateType | undefined];
     const [previous, current] = data;
 
-    const todaysRates: TodayRates = {
+    if (!current)
+      return {
+        base: previous.base,
+        quote: previous.quote,
+        rate: previous.rate,
+        growth: "unchanged",
+        growth_percentage: "0.00%",
+      };
+
+    return {
       base: current.base,
       quote: current.quote,
       rate: current.rate,
       growth: current.rate - previous.rate > previous.rate ? "positive" : current.rate - previous.rate < previous.rate ? "negative" : "unchanged",
       growth_percentage: `${(current.rate - previous.rate).toFixed(2)}%`,
     };
-
-    return todaysRates;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(`Failed to fetch exchange rate: ${error.message}`, { cause: error });

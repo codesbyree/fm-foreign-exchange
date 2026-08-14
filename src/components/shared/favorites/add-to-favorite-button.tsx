@@ -15,7 +15,7 @@ export default function AddToFavoriteButton() {
   const quoteCurrency = searchParams.get("quote");
 
   if (!baseCurrency || !quoteCurrency) return null;
-  const isFavorite = favorites.filter((i) => i.id === baseCurrency + quoteCurrency).length > 0;
+  const isFavorite = favorites.filter((i) => i.id === (baseCurrency + quoteCurrency).toLowerCase()).length > 0;
 
   const toggle = () => {
     if (isFavorite) removeFromFavorite(baseCurrency + quoteCurrency);

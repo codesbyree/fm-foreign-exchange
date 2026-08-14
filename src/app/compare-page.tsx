@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router";
 
 import { cn } from "../utils/style.utils";
+import { currencies } from "../config/currency.config";
 import { getRatesComparison } from "../helpers/api.helper";
 import { type RateComparison } from "../types/app.types";
 import { useCurrencyStore } from "../stores/use-currency.store";
@@ -27,13 +28,17 @@ export default function ComparePage() {
 
   if (isLoading)
     return (
-      <Empty>
-        <EmptyTitle>We are fetching some data...</EmptyTitle>
-        <EmptyDescription>
-          Please be patient while we fetch the comparison data.
-          <br className="hidden md:block" /> It might take a while.
-        </EmptyDescription>
-      </Empty>
+      <motion.section initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} className="px-4 py-5 rounded-2xl flex flex-col gap-5 md:px-5 bg-neutral-700 border border-neutral-600">
+        <div className="flex flex-col md:flex-row md:justify-between gap-2.5">
+          <h3 className="tracking-widest uppercase">
+            <span className="text-sm text-neutral-200 mr-3">Multi-Currency</span>
+            <BaseAmountViewer />
+          </h3>
+          <p className="text-xs uppercase text-neutral-50/70">{currencies.length} PAIRS</p>
+        </div>
+
+        <Placeholder />
+      </motion.section>
     );
 
   if (!data?.length)
@@ -54,7 +59,7 @@ export default function ComparePage() {
           <span className="text-sm text-neutral-200 mr-3">Multi-Currency</span>
           <BaseAmountViewer />
         </h3>
-        <p className="text-xs uppercase text-neutral-50/70">{data.length} PAIRS</p>
+        <p className="text-xs uppercase text-neutral-50/70">{currencies.length} PAIRS</p>
       </div>
 
       <motion.ul layout className="flex flex-col gap-3">
@@ -65,6 +70,26 @@ export default function ComparePage() {
         </AnimatePresence>
       </motion.ul>
     </motion.section>
+  );
+}
+
+function Placeholder() {
+  return (
+    <motion.ul layout className="flex flex-col gap-3">
+      <AnimatePresence mode="popLayout">
+        {[...Array(56).keys()].map((i) => (
+          <motion.div
+            key={i}
+            layout
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ type: "spring", stiffness: 320, damping: 32 }}
+            className="cursor-pointer flex bg-neutral-600 border border-neutral-500 hover:border-neutral-300 transition-all rounded-[10px] min-h-14.25"
+          ></motion.div>
+        ))}
+      </AnimatePresence>
+    </motion.ul>
   );
 }
 
@@ -109,7 +134,7 @@ function ComparisonListItem(props: ComparisonListItemProps) {
   const replaceQuote = () => {
     setQuoteAmount(quoteAmount);
     setExchangeRate(data.rate);
-    setSearchParams({ base: data.base, quote: data.quote });
+    setSearchParams({ base: data.base.toLowerCase(), quote: data.quote.toLowerCase() });
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLLIElement>) => {
@@ -128,7 +153,7 @@ function ComparisonListItem(props: ComparisonListItemProps) {
       exit={{ opacity: 0, y: -10 }}
       transition={{ type: "spring", stiffness: 320, damping: 32 }}
       tabIndex={0}
-      className="cursor-pointer flex bg-neutral-600 border border-neutral-500 hover:border-neutral-300 transition-all rounded-[10px] p-3 py-2 gap-1.5 md:gap-5 md:p-4 md:py-2 items-center outline outline-transparent focus-visible:outline-lime-500" // Changed focus to focus-visible
+      className="cursor-pointer flex bg-neutral-600 border border-neutral-500 hover:border-neutral-300 transition-all rounded-[10px] p-3 py-2 gap-1.5 md:gap-5 md:p-4 md:py-2 items-center outline outline-transparent focus-visible:outline-lime-500"
       onClick={replaceQuote}
       onKeyDown={handleKeyDown}
     >
